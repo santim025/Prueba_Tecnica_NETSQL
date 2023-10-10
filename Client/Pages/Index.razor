@@ -1,0 +1,108 @@
+﻿@page "/"
+@using Prueba_Tecnica.Shared.DTO;
+@layout Emptylayout
+
+
+<MudText Align="Align.Center" Style="margin:0 auto;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-weight:bold" 
+                Typo="Typo.h4">Prueba Tecnica NET SQL</MudText>
+
+
+<MudGrid Style="width:30%;margin:0 auto;justify-content:center">
+
+    <MudItem xs="12" sm="6">
+        <MudTextField T="DateTime" Format="yyyy-MM-dd" Label="Fecha Inicial" InputType="MudBlazor.InputType.Date" Style="width:150px" @bind-Value="@dateInitial" />
+    </MudItem>
+
+    <MudItem xs="12" sm="6">
+        <MudTextField T="DateTime" Format="yyyy-MM-dd" Label="Fecha Inicial" InputType="MudBlazor.InputType.Date" Style="width:150px" @bind-Value="@dateFinish" />
+    </MudItem>
+
+</MudGrid>
+
+<MudGrid Style="width:100%;margin:0 auto">
+
+    <MudItem xs="12" sm="4">
+        <MudButton StartIcon="@Icons.Material.Filled.BarChart" Variant="Variant.Outlined"
+                   Color="Color.Surface" FullWidth="true" @onclick="SearchConsume">Consumo por tramo</MudButton>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+        <MudButton StartIcon="@Icons.Material.Filled.AttachMoney" Variant="Variant.Outlined"
+                   Color="Color.Warning" FullWidth="true" @onclick="SearchConsumeByClient">Costos por tramo</MudButton>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+        <MudButton StartIcon="@Icons.Material.Filled.MoneyOff" Variant="Variant.Outlined"
+                   Color="Color.Info" FullWidth="true" @onclick="SearchTwenty">Perdidas por tramo</MudButton>
+    </MudItem>
+
+</MudGrid>
+
+@if (consumeInfo.Count != 0)
+{
+    <div style="display:flex;justify-content:center">
+        <MudDataGrid Items="consumeInfo" Style="width:80%">
+            <Columns>
+                <PropertyColumn Property="x => x.Line" Title="Linea" />
+                <PropertyColumn Property="x => x.Consumo" Title="Consumo" />
+                <PropertyColumn Property="x => x.Costo" Title="Costo" />
+                <PropertyColumn Property="x => x.Perdida" Title="Perdida" Format="P" />
+            </Columns>
+        </MudDataGrid>
+    </div>
+
+}
+
+@if (consumeByClient.Count != 0)
+{
+    <div style="display:flex;justify-content:center">
+        <MudDataGrid Items="consumeByClient" Style="width:80%">
+            <Columns>
+                <PropertyColumn Property="x => x.Linea" Title="Linea" />
+
+                <PropertyColumn Property="x => x.ConsumoResidencial" Title="Consumo.R" />
+                <PropertyColumn Property="x => x.CostoResidencial" Title="Costo.R" />
+                <PropertyColumn Property="x => x.PerdidaResidencial" Title="Perdida.R" Format="P"/>
+
+                <PropertyColumn Property="x => x.ConsumoIndustrial" Title="Consumo.I" />
+                <PropertyColumn Property="x => x.CostoIndustrial" Title="Costo.I" />
+                <PropertyColumn Property="x => x.PerdidaIndustrial" Title="Perdida.I" Format="P"/>
+
+                <PropertyColumn Property="x => x.ConsumoComercial" Title="Consumo.C"  />
+                <PropertyColumn Property="x => x.CostoComercial" Title="Costo.C"/>
+                <PropertyColumn Property="x => x.PerdidaComercial" Title="Perdida.C" Format="P"/>
+            </Columns>
+        </MudDataGrid>
+    </div>
+
+    <MudText Align="Align.Center" Style="margin:0 auto;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-weight:bold"
+             Typo="Typo.h6" Color="Color.Error">@MessageStyle</MudText>
+
+}
+
+@if (withLossesInfos.Count != 0)
+{
+    <div style="display:flex;justify-content:center">
+        <MudDataGrid T="TrancheClientWithLossesInfo" Items="withLossesInfos" Style="width:50%" RowsPerPage="10">
+            <Columns>
+                <PropertyColumn Property="x => x.Linea" Title="Linea" />
+                <PropertyColumn Property="x => x.PérdidaTotal" Title="Perdida Total" />
+                <PropertyColumn Property="x => x.Fecha" Title="Fecha" />
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="TrancheClientWithLossesInfo" PageSizeOptions=@(new int[] {5, 10, 20}) DisableRowsPerPage />
+            </PagerContent>
+        </MudDataGrid>
+    </div>
+}
+
+<MudSnackbarProvider />
+
+<MudOverlay @bind-Visible="inprogress" DarkBackground="true" ZIndex="9999" AutoClose="false">
+    <div>
+        <MudText Style="text-align:center; font-family: 'Pathway Gothic One';color:white;font-weight:bold" Typo="Typo.h4">@textInProgress</MudText>
+        <div style="text-align:center">
+            <MudProgressCircular Color="Color.Warning" Style="height:100px;width:100px;" Indeterminate="true" />
+        </div>
+    </div>
+</MudOverlay>
